@@ -221,6 +221,10 @@ HTTP_CODE httpServer::get_file(std::string & url,struct stat& file_stat,int& fd)
 	{
 		return NO_SOURCE;
 	}
+	if (url[url.size() - 1] == '=')
+	{
+		url.erase(url.end() - 3, url.end());
+	}
 	if (fstatat(sourceDirfd,url.data()+1, &file_stat,0)<0)
 	{
 		return NO_SOURCE;
@@ -244,11 +248,15 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 	{
 	case(GET_REQUEST):
 	{
-		switch (get_file(requestData.url,file_stat,fd))
+		switch (get_file(requestData.url,file_stat,fd))//内部会打开文件描述符，记得关闭
 		{
 		case(GET_REQUEST):
 		{
-			char* file_addr = (char*)mmap(0, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);//用mmap函数省去一次读入
+			char* file_addr = (char*)mmap(0, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);//用mmap函数省去一次读入//记得归还内存
+			if (file_addr == MAP_FAILED)
+			{
+				cout << "mmap error: " << errno << endl;
+			}
 			char* data = new char[256 + file_stat.st_size];
 			addStatusLine(200, "OK", data);//状态行
 			parse_contentType(requestData);
@@ -261,6 +269,7 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 			if(requestData.keep_alive==false)
 				connPtr->handleClose(connPtr->getSockfd());
 			delete data;
+			munmap(file_addr, file_stat.st_size);
 			break;
 		}
 		case(BAD_REQUEST):		
@@ -289,29 +298,7 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 		}
 			
 		}
-		//if (requestData.url.find("index") != std::string::npos)//测试并发量使用，避免文件操作拖慢服务器速度。
-		//{
-		//	char data[256];
-		//	string message("<html>Hello World!</html>");//当作index.html,以后有机会再添加文件读取功能
-		//	addStatusLine(200, "OK", data);
-		//	addHeader(requestData.keep_alive, message.size(), data,sizeof(data));
-		//	snprintf(data + strlen(data), sizeof(data) - strlen(data), "%s", message.data());
-		//	//std::cout << data << std::endl;
-		//	connPtr->send(data, strlen(data));
-		//	if(requestData.keep_alive==false)
-		//		connPtr->handleClose(connPtr->getSockfd());
-		//}
-		////connPtr->send("");
-		//else if (requestData.url.find("favicon.ico") != std::string::npos)
-		//{
-		//	char data[1024];
-		//	addStatusLine(200, "OK", data);
-		//	addHeader_ico(data, sizeof(data));
-		//	snprintf(data + strlen(data), sizeof(data) - strlen(data), "%s", favicon);
-		//	connPtr->send(data, strlen(data));
-		//	if (requestData.keep_alive == false)
-		//		connPtr->handleClose(connPtr->getSockfd());
-		//}
+		close(fd);
 		break;
 	}
 	case(BAD_REQUEST):
@@ -370,6 +357,10 @@ void httpServer::parse_contentType(requestHeadData& data)
 	else if (typestring == "ico")
 	{
 		data.type = "image/x-icon";
+	}
+	else if (typestring == "woff" || typestring == "font")
+	{
+		data.type = "font/woff";
 	}
 	else
 	{
