@@ -1,4 +1,4 @@
-# title: Multi-Threaded-Server
+# Multi-Threaded-Server
 A C++ High Performance Web Server
 
 ## 1.Introduction
