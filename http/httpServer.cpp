@@ -6,6 +6,23 @@
 #include<sys/stat.h>
 #include<sys/mman.h>
 #include<fcntl.h>
+#include<vector>
+using namespace std;
+vector<char*> spilt(char* start, int index, char c)
+{
+	vector<char*> res;
+	res.push_back(start);
+	for (int i = 0; i < index; ++i)
+	{
+		if (*(start + i) == c)
+		{
+			*(start + i) = '\0';
+			res.push_back(start + i + 1);
+		}
+	}
+	*(start + index - 1) = '\0';
+	return res;
+}
 httpServer::httpServer(int threadNum) :loop(), tcpserver(&loop, threadNum), sourceFilePath()
 {
 	//std::cout << "httpServer constructor" << std::endl;

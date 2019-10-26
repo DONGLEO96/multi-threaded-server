@@ -3,6 +3,19 @@
 #include<functional>
 #include"Connection.h"
 #include"Logging.h"
+#include"util.h"
+#include<signal.h>
+
+void handleSIGPIPE()
+{
+	struct sigaction sa;
+	memset(&sa, '\0', sizeof(sa));
+	sa.sa_handler = SIG_IGN;
+	sa.sa_flags = 0;
+	if (sigaction(SIGPIPE, &sa, NULL))
+		return;
+}
+
 TCPserver::TCPserver(Eventloop* loop,int threadNum) :_loop(loop), _looppool(loop)
 {
 	if (threadNum > 0)
@@ -85,7 +98,9 @@ void TCPserver::newConnectioninLoop(int fd, sockaddr_in cliaddr)
 //}
 void TCPserver::start()
 {
+	handleSIGPIPE();
 	_acceptor.reset(new Acceptor(_loop));
+	
 	_acceptor->setnewConnCallback(std::bind(&TCPserver::newConnectioninLoop, this, std::placeholders::_1, std::placeholders::_2));
 	//_acceptor->setnewConnCallback(std::bind(&TCPserver::newConnnection1, this, std::placeholders::_1, std::placeholders::_2));
 	
@@ -107,5 +122,4 @@ void TCPserver::start()
 	}
 	_acceptor->start();
 }
-
 
