@@ -21,7 +21,7 @@ public:
 	void removeConnection(int fd,Eventloop* currLoop);
 	void start();
 	void setMessageCallback(MessageCallback cb) { _messageCallback = cb; }
-	void setConnectionCallback(ConnectionCallback cb) { _connectionCallback = cb; }
+	void setConnectionCompleteCallback(ConnectionCallback cb) { _connectionCompleteCallback = cb; }
 private:
 	void newConnnection(int fd, sockaddr_in cliaddr, Eventloop* currLoop);
 	void newConnectioninLoop(int fd,sockaddr_in cliaddr);
@@ -34,7 +34,7 @@ private:
 	Eventloop* _loop;
 	MessageCallback _messageCallback;
 	WriteCompleteCallback _writecompleteCallback;
-	ConnectionCallback _connectionCallback;
+	ConnectionCallback _connectionCompleteCallback;
 	EventLoopThreadpool _looppool;//version14 
 };
 

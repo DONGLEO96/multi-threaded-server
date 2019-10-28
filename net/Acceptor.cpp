@@ -27,7 +27,7 @@ int Acceptor::sock_bind_listen()
 	struct sockaddr_in servaddr;
 	memset(&servaddr, 0, sizeof(servaddr));
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(80);
+	servaddr.sin_port = htons(8000);
 	servaddr.sin_family = AF_INET;
 	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &on, sizeof(on));
 	if (bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)

@@ -3,7 +3,6 @@
 #include<functional>
 #include"Connection.h"
 #include"Logging.h"
-#include"util.h"
 #include<signal.h>
 
 void handleSIGPIPE()
@@ -65,6 +64,8 @@ void TCPserver::newConnnection(int fd, sockaddr_in cliaddr, Eventloop* currLoop)
 	_conn->SetMessageCallback(_messageCallback);
 	if (_writecompleteCallback)
 		_conn->SetWriteCompleteCallback(_writecompleteCallback);
+	if (_connectionCompleteCallback)
+		_connectionCompleteCallback(_conn);
 	_conn->activationChannel();
 	connectionMap[currLoop].insert(std::make_pair(fd, _conn));
 	//std::cout << "connection nums:" << connectionMap.size() << std::endl;s

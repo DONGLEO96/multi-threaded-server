@@ -9,10 +9,6 @@ Connection::Connection(int sockfd, Eventloop* loop, struct sockaddr_in cliaddr) 
 {
 	//std::cout << "connection constructor" << std::endl;
 	//channel->EnableReading();不能在这儿更新监听通道，多线程会出错
-	if (_connectionCallback)
-		_connectionCallback(shared_from_this());
-	else
-		defaultConnectionCallback();
 	channel->setReadCallback(std::bind(&Connection::handleRead, this, fd));
 	channel->setWriteCallback(std::bind(&Connection::handleWrite, this, fd));
 	channel->setCloseCallback(std::bind(&Connection::handleClose, this, fd));

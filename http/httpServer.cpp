@@ -2,7 +2,6 @@
 #include<string>
 #include<string.h>
 #include<iostream>
-#include"util.h"
 #include<sys/stat.h>
 #include<sys/mman.h>
 #include<fcntl.h>
@@ -26,6 +25,7 @@ vector<char*> spilt(char* start, int index, char c)
 httpServer::httpServer(int threadNum) :loop(), tcpserver(&loop, threadNum), sourceFilePath()
 {
 	//std::cout << "httpServer constructor" << std::endl;
+	connBuckets.push(Bucket());
 }
 
 
@@ -43,7 +43,9 @@ void httpServer::start()
 	}
 	sourceDirfd = open(sourceFilePath.data(), O_RDONLY);
 	tcpserver.setMessageCallback(std::bind(&httpServer::handleRead, this, std::placeholders::_1, std::placeholders::_2));
+	tcpserver.setConnectionCompleteCallback(std::bind(&httpServer::connCallBack, this, std::placeholders::_1));
 	tcpserver.start();
+	loop.runEvery(10, std::bind(&httpServer::onTimer, this));//60*10，每10秒检测一次，主动断开超过60*10秒无响应
 	loop.loop();
 	//tcpserver.setMessageCallback(std::bind(&httpServer::parse_http, this, std::placeholders::_1, std::placeholders::_2));
 	//tcpserver.start();
@@ -336,6 +338,13 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 		break;
 	}
 	}
+	if (connPtr->getContext() != NULL)
+	{
+		WeakEntryPtr weakEntry(*(static_cast<WeakEntryPtr*>(connPtr->getContext())));
+		EntryPtr entry(weakEntry.lock());
+		if (entry)
+			connBuckets.back()[connPtr->getEventloop()].insert(entry);
+	}
 }
 
 void httpServer::addStatusLine(int status, const char * title,char* data)
@@ -357,6 +366,21 @@ void httpServer::addHeader(bool keep_alive,int content_len, char* data,int dataS
 void httpServer::addHeader_ico(char* data, int dataSize)
 {
 	snprintf(data + strlen(data), dataSize - strlen(data), "Content-Type:image/png\r\n\r\n");
+}
+void httpServer::connCallBack(TCPserver::ConnectionPtr conn)
+{
+	EntryPtr entry(new Entry(conn));
+	connBuckets.back()[conn->getEventloop()].insert(entry);
+	WeakEntryPtr* weakEntry = new WeakEntryPtr(entry);
+	conn->setContext(static_cast<void*>(weakEntry));
+	entry->setconnContext(weakEntry);
+}
+void httpServer::onTimer()
+{
+	connBuckets.push(Bucket());
+	if (connBuckets.size() > 60)
+		connBuckets.pop();
+	//cout << "2 second" << endl;//测试用
 }
 void httpServer::parse_contentType(requestHeadData& data)
 {
