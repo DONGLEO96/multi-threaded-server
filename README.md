@@ -62,7 +62,7 @@ A C++ High Performance Web Server
 
 日志文件：
 
-![](/Image/LOGFile.jpg)
+![](https://github.com/DONGLEO96/multi-threaded-server/blob/master/Image/LOGFile.jpg)
 
 可以看到，日志文件完成了400万行的日志记录，对服务器性能的影响几乎很小。
 
