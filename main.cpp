@@ -1,8 +1,8 @@
 #include"httpServer.h"
 int main(int argc, char* argv[])
 {
-	httpServer test(1);
-	test.setSourceFile("/home/qwe/myBlog/public");
+	httpServer test(3);
+	test.setSourceFile("/home/ubuntu/myBlog/public");
 	test.start();
 }
 //void echoFunc(TCPserver::ConnectionPtr connPtr, Buffer& buffer)//onMessage»Øµ÷º¯Êý

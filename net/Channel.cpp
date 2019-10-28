@@ -7,14 +7,15 @@ const int Channel::ReadEvent = POLLIN|POLLPRI;
 const int Channel::NoneEvent = 0;
 const int Channel::WriteEvent = POLLOUT;
 Channel::Channel(int sockfd, Eventloop* loop) :sock_fd(sockfd), _event(0), _revent(0), _index(-1),
-												readCallback(NULL),writeCallback(NULL),closeCallback(NULL),_loop(loop)
+												readCallback(NULL),writeCallback(NULL),closeCallback(NULL),_loop(loop),
+												isSetTie(false)
 {
 
 }
 Channel::~Channel()
 {
 	close(sock_fd);
-	//sstd::cout << "channel destructor" << std::endl;
+	//std::cout << "channel destructor" << std::endl;
 }
 void Channel::EnableReading()
 {
@@ -48,25 +49,30 @@ void Channel::update()
 void Channel::handleEvent()
 {
 	std::shared_ptr<Connection> guard = _tie.lock();
-	if (_revent&POLLIN)
-		if(readCallback)
-			readCallback();
-		else
+	if (isSetTie==false|| guard != NULL)
+	{
 		{
-			printf("readCallback is NULL\n");
+			if (_revent&POLLIN)
+				if (readCallback)
+					readCallback();
+				else
+				{
+					printf("readCallback is NULL\n");
+				}
+			if (_revent& POLLOUT)
+				if (writeCallback)
+					writeCallback();
+				else
+				{
+					printf("writeCallback is NULL\n");
+				}
+			if ((_revent&POLLHUP) && !(_revent&POLLIN))
+				if (closeCallback)
+					closeCallback();
+				else
+				{
+					printf("closeCallback is NULL\n");
+				}
 		}
-	if (_revent& POLLOUT)
-			if (writeCallback)
-				writeCallback();
-			else
-			{
-				printf("writeCallback is NULL\n");
-			}
-	if ((_revent&POLLHUP) && !(_revent&POLLIN))
-		if (closeCallback)
-			closeCallback();
-		else
-		{
-			printf("closeCallback is NULL\n");
-		}
+	}
 }

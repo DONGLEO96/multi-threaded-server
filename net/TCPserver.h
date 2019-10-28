@@ -25,8 +25,6 @@ public:
 private:
 	void newConnnection(int fd, sockaddr_in cliaddr, Eventloop* currLoop);
 	void newConnectioninLoop(int fd,sockaddr_in cliaddr);
-	void newConnnection1(int fd, sockaddr_in cliaddr, Eventloop* currLoop,ConnectionPtr conn);
-	void newConnectioninLoop1(int fd, sockaddr_in cliaddr);
 	std::unique_ptr<Acceptor> _acceptor;
 	//std::map<int, ConnectionPtr> connectionMap;//这个map持有指针让他不会自动析构
 	std::map<Eventloop*, std::map<int, ConnectionPtr>> connectionMap;

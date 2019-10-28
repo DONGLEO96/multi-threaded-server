@@ -10,6 +10,7 @@
 Acceptor::Acceptor(Eventloop* loop):_loop(loop),listenfd(sock_bind_listen()),acceptChannel(listenfd,_loop)
 {
 	acceptChannel.setReadCallback(std::bind(&Acceptor::handleRead,this));
+
 }
 
 
@@ -67,14 +68,14 @@ void Acceptor::handleRead()
 	//	channel->EnableReading();*/
 	//}
 	int connfd = 0;
-	while ((connfd=accept4(listenfd, (sockaddr*)(&cliaddr), &clilen, O_NONBLOCK | O_CLOEXEC))>=0)
+	if ((connfd=accept4(listenfd, (sockaddr*)(&cliaddr), &clilen, O_NONBLOCK | O_CLOEXEC))>=0)
 	{
 		setSocketNodelay(connfd);//πÿ±’NagleÀ„∑®
 		if (_newConnCallback)
 			_newConnCallback(connfd, cliaddr);
-		LOG << "accept new connection,addr:" << inet_ntoa(cliaddr.sin_addr) << "  port:" << ntohs(cliaddr.sin_port) << "\n";
+		//LOG << "accept new connection,addr:" << inet_ntoa(cliaddr.sin_addr) << "  port:" << ntohs(cliaddr.sin_port) << "\n";
 	}
-	if (errno != EWOULDBLOCK)
+	if (errno != 0)
 	{
 		std::cout << "accept4 error" << std::endl << errno << std::endl;
 	}

@@ -23,7 +23,7 @@ public:
 	void EnableWriting();
 	void disableWriting();
 	void disableAll();
-	void tie(std::shared_ptr<Connection> connptr) { _tie = connptr; }
+	void tie(std::shared_ptr<Connection> connptr) { _tie = connptr; isSetTie = true; }
 	bool isWriting() { return _event & WriteEvent; }
 	bool isNoneEvent() const { return _event == NoneEvent; }
 	int getSockfd() { return sock_fd; }
@@ -40,6 +40,7 @@ private:
 	EventCallback closeCallback;
 	EventCallback readCallback;
 	EventCallback writeCallback;
+	bool isSetTie;
 	Eventloop* _loop;
 };
 

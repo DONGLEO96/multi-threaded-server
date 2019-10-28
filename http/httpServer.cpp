@@ -271,6 +271,7 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 		{
 		case(GET_REQUEST):
 		{
+
 			char* file_addr = (char*)mmap(0, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);//用mmap函数省去一次读入//记得归还内存
 			if (file_addr == MAP_FAILED)
 			{
@@ -290,12 +291,26 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 				connPtr->handleClose(connPtr->getSockfd());
 			delete data;
 			munmap(file_addr, file_stat.st_size);
+			close(fd);
 			break;
 		}
 		case(BAD_REQUEST):		
 		{
-			char data[256];
+			char data[512];
 			addStatusLine(400, "Bad Request", data);
+			string message("<html>Bad Request</html>");
+			addHeader(requestData.keep_alive, message.size(), data, 512, 0);
+			snprintf(data + strlen(data), 512 - strlen(data), "%s", message.data());
+			connPtr->send(data, strlen(data));
+			if (requestData.keep_alive == false)
+				connPtr->handleClose(connPtr->getSockfd());
+			
+			break;
+		}
+		case(NO_SOURCE):
+		{
+			char data[512];
+			addStatusLine(400, "No Source", data);
 			string message("<html>Bad Request</html>");
 			addHeader(requestData.keep_alive, message.size(), data, sizeof(data), 0);
 			snprintf(data + strlen(data), sizeof(data) - strlen(data), "%s", message.data());
@@ -304,21 +319,10 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 				connPtr->handleClose(connPtr->getSockfd());
 			break;
 		}
-		case(NO_SOURCE):
-		{
-			char data[256];
-			addStatusLine(400, "NO Source", data);
-			string message("<html>NO Source</html>");
-			addHeader(requestData.keep_alive, message.size(), data, sizeof(data),0);
-			snprintf(data + strlen(data), sizeof(data) - strlen(data), "%s", message.data());
-			connPtr->send(data, strlen(data));
-			if (requestData.keep_alive == false)
-				connPtr->handleClose(connPtr->getSockfd());
+		default:
 			break;
-		}
 			
 		}
-		close(fd);
 		break;
 	}
 	case(BAD_REQUEST):
@@ -331,6 +335,7 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 		connPtr->send(data, strlen(data));
 		if (requestData.keep_alive == false)
 			connPtr->handleClose(connPtr->getSockfd());
+		break;
 	}
 	default:
 	{
@@ -359,7 +364,7 @@ void httpServer::addHeader(bool keep_alive,int content_len, char* data,int dataS
 	if (keep_alive == true)
 	{
 		int len = strlen(data);
-		snprintf(data + len, dataSize, "Keep-Alive:timeout=30\r\n");
+		snprintf(data + len, dataSize, "Keep-Alive:timeout=300\r\n");//如果浏览器不处理这个字段服务器会在600秒后断开连接
 	}
 	snprintf(data + strlen(data), dataSize, "\r\n");
 }

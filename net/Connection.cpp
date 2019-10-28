@@ -36,7 +36,7 @@ void Connection::handleRead(int fd)
 	{
 		//std::cout << "inputBuffer read error" << std::endl << errorNum << std::endl;.
 
-		LOG << "error:"<< inet_ntoa(this->_cliaddr.sin_addr) << " send " << nums << " bytes" << "\n";
+		//LOG << "error:"<< inet_ntoa(this->_cliaddr.sin_addr) << " send " << nums << " bytes" << "\n";
 	}
 	if (nums == 0)
 	{
@@ -44,7 +44,7 @@ void Connection::handleRead(int fd)
 	}
 	if (nums > 0)
 	{
-		LOG << inet_ntoa(this->_cliaddr.sin_addr) << " send " << nums << " bytes" << "\n";
+		//LOG << inet_ntoa(this->_cliaddr.sin_addr) << " send " << nums << " bytes" << "\n";
 		//write(fd, Buffer, nums);//应以messageCallback代替，将控制权交给用户，由用户传入TCPserver，再传入Connection
 		_messageCallback(shared_from_this(),inBuffer);//回调messageCallback，后期加入线程池，将messageCallback中的任务放入线程池中处理
 	}
@@ -76,7 +76,7 @@ void Connection::sendinLoop(char* data,size_t len)
 		n = write(fd, data, len);
 		if (n < 0)
 		{
-			LOG << "error:" << " send " << n << " bytes to" << inet_ntoa(this->_cliaddr.sin_addr) << "\n";
+			//LOG << "error:" << " send " << n << " bytes to" << inet_ntoa(this->_cliaddr.sin_addr) << "\n";
 			//std::cout << "send error" << std::endl << errno << std::endl;
 		}
 		if (static_cast<size_t>(n) == len)//最多一次能发两百多万byte
@@ -89,7 +89,7 @@ void Connection::sendinLoop(char* data,size_t len)
 			{
 				//std::cout << "send complete" << std::endl;
 			}
-			LOG << " send " << n << " bytes to" << inet_ntoa(this->_cliaddr.sin_addr) << "\n";
+			//LOG << " send " << n << " bytes to" << inet_ntoa(this->_cliaddr.sin_addr) << "\n";
 		}	
 	}
 	if (static_cast<size_t>(n) < len)

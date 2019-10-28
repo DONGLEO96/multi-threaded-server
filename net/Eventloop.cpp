@@ -10,7 +10,7 @@ Eventloop::Eventloop() :_mutex(),
 						wakeupFd(creatEventfd()),wakeupChannel(wakeupFd,this),
 						threadId(static_cast<pid_t>(::syscall(SYS_gettid))),
 						_callingPendingFunctors(false),
-						funcBuffer(524288)
+						funcBuffer(65536)
 {
 	wakeupChannel.setReadCallback(std::bind(&Eventloop::handleRead, this));
 	wakeupChannel.EnableReading();

@@ -45,7 +45,7 @@ void TCPserver::removeConnection(int fd,Eventloop* currloop)
 {
 	currloop->assertInLoopThread();
 	currloop->removeChannel(fd);
-	LOG << "Disconncet with addr:" << inet_ntoa(connectionMap[currloop].find(fd)->second->getAddr().sin_addr) << "\n";
+	//LOG << "Disconncet with addr:" << inet_ntoa(connectionMap[currloop].find(fd)->second->getAddr().sin_addr) << "\n";
 	connectionMap[currloop].erase(fd);
 	//_loop->assertInLoopThread();
 	//_loop->removeChannel(fd);//怎么让对应的loop去删除channel
