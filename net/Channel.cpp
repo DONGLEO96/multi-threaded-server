@@ -48,10 +48,6 @@ void Channel::update()
 void Channel::handleEvent()
 {
 	std::shared_ptr<Connection> guard = _tie.lock();
-	//if (!isAcceptor||guard == NULL)
-	//{
-	//	return;
-	//}
 	if (_revent&POLLIN)
 		if(readCallback)
 			readCallback();

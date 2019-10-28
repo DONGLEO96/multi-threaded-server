@@ -9,6 +9,7 @@ int main(int argc, char* argv[])
 //{
 //	connPtr->send(buffer.beginRead(), buffer.readableBytes());
 //	buffer.retriveAll();
+//	connPtr->handleClose(connPtr->getSockfd());
 //}
 //void echo10000Func(TCPserver::ConnectionPtr connPtr, Buffer& buffer)
 //{
@@ -130,7 +131,8 @@ int main(int argc, char* argv[])
 //{
 //	Eventloop loop;
 ////	loop.runEvery(2, TimerTest);//timer≤‚ ‘¥˙¬Î
-//	TCPserver tcpserver(&loop);
+//	TCPserver tcpserver(&loop,3);
+//	
 //	tcpserver.setMessageCallback(echoFunc);
 //	tcpserver.start();
 //	loop.loop();

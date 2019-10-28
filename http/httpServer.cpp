@@ -274,10 +274,11 @@ void httpServer::handleRead(TCPserver::ConnectionPtr connPtr, Buffer & inBuffer)
 			{
 				cout << "mmap error: " << errno << endl;
 			}
-			char* data = new char[256 + file_stat.st_size];
+			int headerSize = 512;
+			char* data = new char[headerSize + file_stat.st_size];
 			addStatusLine(200, "OK", data);//状态行
 			parse_contentType(requestData);
-			addHeader(requestData.keep_alive, file_stat.st_size, data,sizeof(data),requestData.type.data());//头部
+			addHeader(requestData.keep_alive, file_stat.st_size, data, headerSize,requestData.type.data());//头部
 			int headerlen = strlen(data);
 			memcpy(data + headerlen, file_addr, file_stat.st_size);//拼接正文
 			//snprintf(data + strlen(data), sizeof(data) - strlen(data), "%s", file_addr);
@@ -344,8 +345,14 @@ void httpServer::addStatusLine(int status, const char * title,char* data)
 
 void httpServer::addHeader(bool keep_alive,int content_len, char* data,int dataSize,const char* content_type)
 {
-	snprintf(data + strlen(data), dataSize - strlen(data), "Connectin:%s\r\nContent-Type:%s\r\nContent-Length:%d\r\n\r\n",
+	snprintf(data + strlen(data), dataSize - strlen(data), "Connectin:%s\r\nContent-Type:%s\r\nContent-Length:%d\r\n",
 		(keep_alive == true) ? "keep-alive" : "close", (content_type == 0) ? "text/html" : content_type, content_len);
+	if (keep_alive == true)
+	{
+		int len = strlen(data);
+		snprintf(data + len, dataSize, "Keep-Alive:timeout=30\r\n");
+	}
+	snprintf(data + strlen(data), dataSize, "\r\n");
 }
 void httpServer::addHeader_ico(char* data, int dataSize)
 {
