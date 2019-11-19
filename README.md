@@ -15,13 +15,15 @@ A C++ High Performance Web Server
 因为对编译和Makefile文件不是很了解，在window主机上使用了Visual studio2017远程连接linux系统的功能进行编译。
 
 ## 3.Technical points
-##### （1）.框架[整体模型](http://www.dongserver.cn/2019/10/25/Model/)为Reactor+线程池,主线程负责Accept新链接，并以Round Robin的方式分发给其它IO线程(兼计算线程)，如果是计算密集型服务器，也可以将IO线程与计算线程分离
-##### （2）.[线程间通信方式](http://www.dongserver.cn/2019/10/24/eventfd_and_kfifo/)采用eventfd和任务队列，模仿kfifo实现了环形无锁任务队列
-##### （3）.服务器框架中实现了[应用层缓冲区](http://www.dongserver.cn/2019/10/24/Buffer/)，解决了TCP通信粘包问题
-##### （4）.使用双缓冲实现了高效的[异步日志](http://www.dongserver.cn/2019/10/24/Log/)
-##### （5）.使用[智能指针](http://www.dongserver.cn/2019/10/24/RAII/)和[RAII](http://www.dongserver.cn/2019/10/24/RAII/)方式自动管理对象生存周期
+##### （1）.框架整体模型为Reactor+线程池,主线程负责Accept新链接，并以Round Robin的方式分发给其它IO线程(兼计算线程)，如果是计算密集型服务器，也可以将IO线程与计算线程分离
+##### （2）.线程间通信方式采用eventfd和任务队列，模仿kfifo实现了环形无锁任务队列
+##### （3）.服务器框架中实现了应用层缓冲区，解决了TCP通信粘包问题
+##### （4）.使用双缓冲实现了高效的异步日志
+##### （5）.使用智能指针和RAII方式自动管理对象生存周期
 ##### （6）.实现了状态机解析HTTP（字段并不完整）
 ##### （7）.实现了基于小根堆的定时器
+##### （8）.借助定时器实现了时间轮，以自动踢掉超时连接
+详见：[myWeb](http://49.234.100.37/)
 
 ## 4.目录结构
 **base:** 服务器框架的中一些基础代码，主要包括对时间、互斥锁、条件变量、线程库函数的封装
