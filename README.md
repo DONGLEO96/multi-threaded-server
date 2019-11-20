@@ -4,7 +4,7 @@ A C++ High Performance Web Server
 ## 1.Introduction
 模仿muduo网络库实现了一个TCP服务器框架，在其上实现了一个静态http服务器（只解析GET字段），并将hexo部署在该服务器上。
 
-测试页面：[myWeb](http://49.234.100.37/)
+测试页面：[www.dongserver.cn/](http://www.dongserver.cn/)
 
 代码位置：[github](https://github.com/DONGLEO96/multi-threaded-server)
 
