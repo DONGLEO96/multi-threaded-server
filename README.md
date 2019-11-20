@@ -4,7 +4,7 @@ A C++ High Performance Web Server
 ## 1.Introduction
 模仿muduo网络库实现了一个TCP服务器框架，在其上实现了一个静态http服务器（只解析GET字段），并将hexo部署在该服务器上。
 
-测试页面：[www.dongserver.cn/](http://www.dongserver.cn/)
+测试页面：[www.dongserver.cn](http://www.dongserver.cn/)
 
 代码位置：[github](https://github.com/DONGLEO96/multi-threaded-server)
 
@@ -23,7 +23,7 @@ A C++ High Performance Web Server
 ##### （6）.实现了状态机解析HTTP（字段并不完整）
 ##### （7）.实现了基于小根堆的定时器
 ##### （8）.借助定时器实现了时间轮，以自动踢掉超时连接
-详见：[myWeb](http://49.234.100.37/)
+详见：[www.dongserver.cn](http://www.dongserver.cn/)
 
 ## 4.目录结构
 **base:** 服务器框架的中一些基础代码，主要包括对时间、互斥锁、条件变量、线程库函数的封装
