@@ -30,7 +30,7 @@ int Acceptor::sock_bind_listen()
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(8000);
 	servaddr.sin_family = AF_INET;
-	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &on, sizeof(on));
+	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &on, sizeof(on));//SO_REUSEPORT调试时使用
 	if (bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
 	{
 		std::cout << "bind error" << std::endl << errno << std::endl;
@@ -70,7 +70,7 @@ void Acceptor::handleRead()
 	int connfd = 0;
 	if ((connfd=accept4(listenfd, (sockaddr*)(&cliaddr), &clilen, O_NONBLOCK | O_CLOEXEC))>=0)
 	{
-		setSocketNodelay(connfd);//�ر�Nagle�㷨
+		setSocketNodelay(connfd);//¹Ø±ÕNagleËã·¨
 		if (_newConnCallback)
 			_newConnCallback(connfd, cliaddr);
 		//LOG << "accept new connection,addr:" << inet_ntoa(cliaddr.sin_addr) << "  port:" << ntohs(cliaddr.sin_port) << "\n";
