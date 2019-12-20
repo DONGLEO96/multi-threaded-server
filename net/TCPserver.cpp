@@ -33,13 +33,13 @@ TCPserver::~TCPserver()
 //	currloop->assertInLoopThread();
 //	currloop->removeChannel(fd);
 //	//_loop->assertInLoopThread();
-//	//_loop->removeChannel(fd);//ÔõÃ´ÈÃ¶ÔÓ¦µÄloopÈ¥É¾³ıchannel
-//	connectionMap.erase(fd);//°ÑĞÂ½¨Á´½Ó½»¸øÁËIOÏß³Ì£¬Õâ¸ömap¾Í±ä³ÉÁËÁÙ½çÖµ£¬²»ÄÜÕâÃ´Ğ´
+//	//_loop->removeChannel(fd);//æ€ä¹ˆè®©å¯¹åº”çš„loopå»åˆ é™¤channel
+//	connectionMap.erase(fd);//æŠŠæ–°å»ºé“¾æ¥äº¤ç»™äº†IOçº¿ç¨‹ï¼Œè¿™ä¸ªmapå°±å˜æˆäº†ä¸´ç•Œå€¼ï¼Œä¸èƒ½è¿™ä¹ˆå†™
 //	//std::cout << "connection nums:" << connectionMap.size() << std::endl;
-//	//Èç¹û´æÔÚreactorÏß³Ì³Ø£¬ÒÆ³ıĞèÒªĞŞ¸Ä£¬connectionÔÚ×Ô¼ºµÄÏß³Ìµ÷ÓÃremoveconnection£¬
-//	//Ó¦¸Ã½«removechannel·ÅÔÚconnection×Ô¼ºµÄÏß³ÌÖĞ´¦Àí£¬TCPserverÏß³ÌÖĞ½ö½öÉ¾³ımapÖĞµÄÖ¸Õë
-//	//²»ÔÙ³ÖÓĞÕâ¸öconnection£¬Í¨¹ı°ó¶¨shared_from_this°ó¶¨Ò»¸öÉ¾³ı»Øµ÷º¯Êı£¬·ÅÔÚconnection×ÔÉíÏß³ÌÖĞÖ´ĞĞ¡£
-//	//ºóÆÚ½øĞĞÍêÉÆ
+//	//å¦‚æœå­˜åœ¨reactorçº¿ç¨‹æ± ï¼Œç§»é™¤éœ€è¦ä¿®æ”¹ï¼Œconnectionåœ¨è‡ªå·±çš„çº¿ç¨‹è°ƒç”¨removeconnectionï¼Œ
+//	//åº”è¯¥å°†removechannelæ”¾åœ¨connectionè‡ªå·±çš„çº¿ç¨‹ä¸­å¤„ç†ï¼ŒTCPserverçº¿ç¨‹ä¸­ä»…ä»…åˆ é™¤mapä¸­çš„æŒ‡é’ˆ
+//	//ä¸å†æŒæœ‰è¿™ä¸ªconnectionï¼Œé€šè¿‡ç»‘å®šshared_from_thisç»‘å®šä¸€ä¸ªåˆ é™¤å›è°ƒå‡½æ•°ï¼Œæ”¾åœ¨connectionè‡ªèº«çº¿ç¨‹ä¸­æ‰§è¡Œã€‚
+//	//åæœŸè¿›è¡Œå®Œå–„
 //}
 void TCPserver::removeConnection(int fd,Eventloop* currloop)
 {
@@ -48,16 +48,16 @@ void TCPserver::removeConnection(int fd,Eventloop* currloop)
 	//LOG << "Disconncet with addr:" << inet_ntoa(connectionMap[currloop].find(fd)->second->getAddr().sin_addr) << "\n";
 	connectionMap[currloop].erase(fd);
 	//_loop->assertInLoopThread();
-	//_loop->removeChannel(fd);//ÔõÃ´ÈÃ¶ÔÓ¦µÄloopÈ¥É¾³ıchannel
-	//connectionMap.erase(fd);//°ÑĞÂ½¨Á´½Ó½»¸øÁËIOÏß³Ì£¬Õâ¸ömap¾Í±ä³ÉÁËÁÙ½çÖµ£¬²»ÄÜÕâÃ´Ğ´
+	//_loop->removeChannel(fd);//æ€ä¹ˆè®©å¯¹åº”çš„loopå»åˆ é™¤channel
+	//connectionMap.erase(fd);//æŠŠæ–°å»ºé“¾æ¥äº¤ç»™äº†IOçº¿ç¨‹ï¼Œè¿™ä¸ªmapå°±å˜æˆäº†ä¸´ç•Œå€¼ï¼Œä¸èƒ½è¿™ä¹ˆå†™
 	//std::cout << "connection nums:" << connectionMap.size() << std::endl;
-	//Èç¹û´æÔÚreactorÏß³Ì³Ø£¬ÒÆ³ıĞèÒªĞŞ¸Ä£¬connectionÔÚ×Ô¼ºµÄÏß³Ìµ÷ÓÃremoveconnection£¬
-	//Ó¦¸Ã½«removechannel·ÅÔÚconnection×Ô¼ºµÄÏß³ÌÖĞ´¦Àí£¬TCPserverÏß³ÌÖĞ½ö½öÉ¾³ımapÖĞµÄÖ¸Õë
-	//²»ÔÙ³ÖÓĞÕâ¸öconnection£¬Í¨¹ı°ó¶¨shared_from_this°ó¶¨Ò»¸öÉ¾³ı»Øµ÷º¯Êı£¬·ÅÔÚconnection×ÔÉíÏß³ÌÖĞÖ´ĞĞ¡£
-	//ºóÆÚ½øĞĞÍêÉÆ
+	//å¦‚æœå­˜åœ¨reactorçº¿ç¨‹æ± ï¼Œç§»é™¤éœ€è¦ä¿®æ”¹ï¼Œconnectionåœ¨è‡ªå·±çš„çº¿ç¨‹è°ƒç”¨removeconnectionï¼Œ
+	//åº”è¯¥å°†removechannelæ”¾åœ¨connectionè‡ªå·±çš„çº¿ç¨‹ä¸­å¤„ç†ï¼ŒTCPserverçº¿ç¨‹ä¸­ä»…ä»…åˆ é™¤mapä¸­çš„æŒ‡é’ˆ
+	//ä¸å†æŒæœ‰è¿™ä¸ªconnectionï¼Œé€šè¿‡ç»‘å®šshared_from_thisç»‘å®šä¸€ä¸ªåˆ é™¤å›è°ƒå‡½æ•°ï¼Œæ”¾åœ¨connectionè‡ªèº«çº¿ç¨‹ä¸­æ‰§è¡Œã€‚
+	//åæœŸè¿›è¡Œå®Œå–„
 }
 
-void TCPserver::newConnnection(int fd, sockaddr_in cliaddr, Eventloop* currLoop)//°ÑĞÂ½¨connectionµÄÈÎÎñ¶ª¸øIOÏß³Ì×Ô¼ºÈ¥Ö´ĞĞ
+void TCPserver::newConnnection(int fd, sockaddr_in cliaddr, Eventloop* currLoop)//æŠŠæ–°å»ºconnectionçš„ä»»åŠ¡ä¸¢ç»™IOçº¿ç¨‹è‡ªå·±å»æ‰§è¡Œ
 {
 	ConnectionPtr _conn(new Connection(fd, currLoop, cliaddr));
 	_conn->SetHandleClose(std::bind(&TCPserver::removeConnection, this, std::placeholders::_1, std::placeholders::_2));
@@ -73,15 +73,15 @@ void TCPserver::newConnnection(int fd, sockaddr_in cliaddr, Eventloop* currLoop)
 void TCPserver::newConnectioninLoop(int fd, sockaddr_in cliaddr)
 {
 	Eventloop* currLoop = _looppool.getNextLoop();
-	if (!currLoop->isQueueInLoop())
-	{
-		//¿¼ÂÇ¸øfd·¢ËÍÒ»¸ö·şÎñÆ÷·±Ã¦
-		close(fd);
-		std::cout << "add func is error" << std::endl;
-	}
+// 	if (!currLoop->isQueueInLoop())
+// 	{
+// 		//è€ƒè™‘ç»™fdå‘é€ä¸€ä¸ªæœåŠ¡å™¨ç¹å¿™
+// 		close(fd);
+// 		std::cout << "add func is error" << std::endl;
+// 	}
 	currLoop->queueInLoop(std::bind(&TCPserver::newConnnection, this, fd, cliaddr, currLoop));
 }
-//void TCPserver::newConnnection1(int fd, sockaddr_in cliaddr, Eventloop* currLoop, ConnectionPtr _conn)//°ÑĞÂ½¨connectionµÄÈÎÎñ¶ª¸øIOÏß³Ì×Ô¼ºÈ¥Ö´ĞĞ
+//void TCPserver::newConnnection1(int fd, sockaddr_in cliaddr, Eventloop* currLoop, ConnectionPtr _conn)//æŠŠæ–°å»ºconnectionçš„ä»»åŠ¡ä¸¢ç»™IOçº¿ç¨‹è‡ªå·±å»æ‰§è¡Œ
 //{
 //	_conn->activationChannel();
 //	connectionMap[currLoop].insert(std::make_pair(fd, _conn));
@@ -106,9 +106,9 @@ void TCPserver::start()
 	//_acceptor->setnewConnCallback(std::bind(&TCPserver::newConnnection1, this, std::placeholders::_1, std::placeholders::_2));
 	
 	_looppool.start();
-	//³õÊ¼»¯connectionMap
+	//åˆå§‹åŒ–connectionMap
 	std::vector<Eventloop*> loops = _looppool.getAllLoops();
-	if (!loops.empty())//IO³Ø
+	if (!loops.empty())//IOæ± 
 	{
 		for (Eventloop* l : loops)
 		{
@@ -116,7 +116,7 @@ void TCPserver::start()
 			connectionMap.insert(std::make_pair(l, p));
 		}
 	}
-	else//Ö÷Ñ­»·
+	else//ä¸»å¾ªç¯
 	{
 		std::map<int, ConnectionPtr> p;
 		connectionMap.insert(std::make_pair(_loop, p));
