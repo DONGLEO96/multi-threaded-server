@@ -25,15 +25,15 @@ public:
 	void doPendingFunctors();
 	void queueInLoop(Functor cb);
 	void runInLoop(Functor cb);
-	//Ôö¼Ó¶¨Ê±Æ÷½Ó¿Ú
+	//å¢åŠ å®šæ—¶å™¨æ¥å£
 	void runAfter(int second,Timer::DeleteCallback cb);
 	void runAt(TimeStamp timeout, Timer::DeleteCallback cb);
 	void runEvery(int second, Timer::DeleteCallback cb);
-	inline bool isQueueInLoop() { return funcBuffer.bufferIsFull()==false; }
+	//inline bool isQueueInLoop() { return funcBuffer.bufferIsFull()==false; }
 private:
 	Mutex _mutex;
 	bool _quit;
-	//Poller* _poller;//memory leak,ÓÃÖÇÄÜÖ¸ÕëÌæ»»
+	//Poller* _poller;//memory leak,ç”¨æ™ºèƒ½æŒ‡é’ˆæ›¿æ¢
 	pollerPtr _poller;
 	int wakeupFd;
 	Channel wakeupChannel;
