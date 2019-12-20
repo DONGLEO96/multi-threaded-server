@@ -72,7 +72,7 @@ void Eventloop::wakeup()
 	uint64_t one = 1;
 	//char buf[8] = "1234567";
 	//int one = 1;
-	ssize_t n = write(wakeupFd, &one, sizeof(one));//·¢ËÍ°ËÎ»ÓĞĞ§Êı×Ö
+	ssize_t n = write(wakeupFd, &one, sizeof(one));//å‘é€å…«ä½æœ‰æ•ˆæ•°å­—
 	//ssize_t n = write(wakeupFd, buf, sizeof(buf));
 	//std::cout <<wakeupFd<<":"<< n << std::endl;
 }
@@ -82,9 +82,9 @@ pid_t Eventloop::getThreadId()
 }
 bool Eventloop::isLoopThread()
 {
-	return threadId == CurrentThread::tid(); //static_cast<pid_t>(::syscall(SYS_gettid));//»»³ÉCurrentTidÖĞµÄº¯Êı£¬¼õÉÙÏµÍ³µ÷ÓÃ´ÎÊı
+	return threadId == CurrentThread::tid(); //static_cast<pid_t>(::syscall(SYS_gettid));//æ¢æˆCurrentTidä¸­çš„å‡½æ•°ï¼Œå‡å°‘ç³»ç»Ÿè°ƒç”¨æ¬¡æ•°
 }
-void Eventloop::quit()//Ö÷Ñ­»·²»ĞèÒª£¬ºóÃæÌí¼ÓµÄ£¬Ñ­»·³ØÖĞµÄloopÊÇĞèÒªÍË³öµÄ¡£
+void Eventloop::quit()//ä¸»å¾ªç¯ä¸éœ€è¦ï¼Œåé¢æ·»åŠ çš„ï¼Œå¾ªç¯æ± ä¸­çš„loopæ˜¯éœ€è¦é€€å‡ºçš„ã€‚
 {
 	_quit = true;
 	if (!isLoopThread())
@@ -100,53 +100,53 @@ void Eventloop::assertInLoopThread()
 		exit(1);
 	}
 }
-//void Eventloop::doPendingFunctors()
-//{
-//	std::vector<Functor> functors;
-//	_callingPendingFunctors = true;
-//
-//	{
-//		MutexGuard lock(_mutex);
-//		functors.swap(_functorList);
-//	}
-//
-//	for (const Functor& functor : functors)
-//	{
-//		functor();
-//	}
-//	_callingPendingFunctors = false;
-//}
 void Eventloop::doPendingFunctors()
 {
-
-	std::vector<Functor> functors(funcBuffer.bufferSize());
-	funcBuffer.bufferOut(&*functors.begin(),functors.size());
+	std::vector<Functor> functors;
 	_callingPendingFunctors = true;
-	for (const Functor functor : functors)
+
+	{
+		MutexGuard lock(_mutex);
+		functors.swap(_functorList);
+	}
+
+	for (const Functor& functor : functors)
 	{
 		functor();
 	}
 	_callingPendingFunctors = false;
 }
-//void Eventloop::queueInLoop(Functor cb)
-//{
-//	{
-//		MutexGuard lock(_mutex);
-//		_functorList.push_back(std::move(cb));
-//	}
-//	if (!isLoopThread() || _callingPendingFunctors)//_callingPendingFunctors²ÎÊı·ÀÖ¹ÊµÔÚdopendingfuncº¯ÊıÖĞÌí¼ÓĞÂÈÎÎñ£¬»½ĞÑÏÂÒ»´ÎpollÈÃº¯ÊıµÃÒÔÖ´ĞĞ
-//	{
-//		wakeup();
-//	}
-//}
+// void Eventloop::doPendingFunctors()
+// {
+
+// 	std::vector<Functor> functors(funcBuffer.bufferSize());
+// 	funcBuffer.bufferOut(&*functors.begin(),functors.size());
+// 	_callingPendingFunctors = true;
+// 	for (const Functor functor : functors)
+// 	{
+// 		functor();
+// 	}
+// 	_callingPendingFunctors = false;
+// }
 void Eventloop::queueInLoop(Functor cb)
 {
-	funcBuffer.bufferIn(cb);
-	if (!isLoopThread() || _callingPendingFunctors)//_callingPendingFunctors²ÎÊı·ÀÖ¹ÊµÔÚdopendingfuncº¯ÊıÖĞÌí¼ÓĞÂÈÎÎñ£¬»½ĞÑÏÂÒ»´ÎpollÈÃº¯ÊıµÃÒÔÖ´ĞĞ
+	{
+		MutexGuard lock(_mutex);
+		_functorList.push_back(std::move(cb));
+	}
+	if (!isLoopThread() || _callingPendingFunctors)//_callingPendingFunctorså‚æ•°é˜²æ­¢å®åœ¨dopendingfuncå‡½æ•°ä¸­æ·»åŠ æ–°ä»»åŠ¡ï¼Œå”¤é†’ä¸‹ä¸€æ¬¡pollè®©å‡½æ•°å¾—ä»¥æ‰§è¡Œ
 	{
 		wakeup();
 	}
 }
+// void Eventloop::queueInLoop(Functor cb)
+// {
+// 	funcBuffer.bufferIn(cb);
+// 	if (!isLoopThread() || _callingPendingFunctors)//_callingPendingFunctorså‚æ•°é˜²æ­¢å®åœ¨dopendingfuncå‡½æ•°ä¸­æ·»åŠ æ–°ä»»åŠ¡ï¼Œå”¤é†’ä¸‹ä¸€æ¬¡pollè®©å‡½æ•°å¾—ä»¥æ‰§è¡Œ
+// 	{
+// 		wakeup();
+// 	}
+// }
 void Eventloop::runInLoop(Functor cb)
 {
 	if (isLoopThread())
